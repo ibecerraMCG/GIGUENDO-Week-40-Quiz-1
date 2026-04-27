@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 40 Practice Quiz 1</title>
+
+    <style>
+        /* --- CSS Variables & Themes --- */
+        :root {
+            --transition-speed: 0.3s;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Default Feedback Colors (Fallback for custom themes) */
+            --feedback-success-bg: #064e3b;
+            --feedback-success-border: #059669;
+            --feedback-success-text: #a7f3d0;
+            --feedback-error-bg: #7f1d1d;
+            --feedback-error-border: #dc2626;
+            --feedback-error-text: #fecaca;
+        }[data-theme="dark"] {
+            --bg-body: #1e293b; --bg-card: #334155; --bg-header: #0f172a;
+            --text-main: #f1f5f9; --text-muted: #94a3b8; --text-accent: #38bdf8;
+            --border-color: #475569; --highlight-bg: #475569;
+            --button-bg: #38bdf8; --button-text: #0f172a; --button-hover: #0ea5e9;
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f3f4f6; --bg-card: #ffffff; --bg-header: #ffffff;
+            --text-main: #1f2937; --text-muted: #6b7280; --text-accent: #2563eb;
+            --border-color: #e5e7eb; --highlight-bg: #f3f4f6;
+            --button-bg: #2563eb; --button-text: #ffffff; --button-hover: #1d4ed8;
+            --feedback-success-bg: #ecfdf5; --feedback-success-border: #34d399; --feedback-success-text: #065f46;
+            --feedback-error-bg: #fef2f2; --feedback-error-border: #f87171; --feedback-error-text: #991b1b;
+        }
+
+        [data-theme="midnight"] {
+            --bg-body: #000000; --bg-card: #000000; --bg-header: #000000;
+            --text-main: #e0e0e0; --text-muted: #888888; --text-accent: #90caf9;
+            --border-color: #333333; --highlight-bg: #1a1a1a;
+            --button-bg: #90caf9; --button-text: #000000; --button-hover: #42a5f5;
+            --feedback-success-bg: #051b11; --feedback-success-border: #0f5132; --feedback-success-text: #75b798;
+            --feedback-error-bg: #2c0b0e; --feedback-error-border: #842029; --feedback-error-text: #ea868f;
+        }[data-theme="legacy-dark"] {
+            --bg-body: #2d343e; --bg-card: #3c424f; --bg-header: #3c424f;
+            --text-main: #e8e6e3; --text-muted: #b0c4de; --text-accent: #8ab4f8;
+            --border-color: #555; --highlight-bg: #454c5a;
+            --button-bg: #8ab4f8; --button-text: #202124; --button-hover: #a3c5f9;
+            --feedback-success-bg: #344e41; --feedback-success-border: #52b788; --feedback-success-text: #c7f9cc;
+            --feedback-error-bg: #5e2129; --feedback-error-border: #a4133c; --feedback-error-text: #f8d7da;
+        }
+
+        [data-theme="sepia"] {
+            --bg-body: #f4ecd8; --bg-card: #fdf6e3; --bg-header: #e4d5b7;
+            --text-main: #433422; --text-muted: #7c6f5a; --text-accent: #a05a2c;
+            --border-color: #d3c4a5; --highlight-bg: #ebe1c9;
+            --button-bg: #a05a2c; --button-text: #fdf6e3; --button-hover: #864822;
+            --feedback-success-bg: #e6f4ea; --feedback-success-border: #8ab893; --feedback-success-text: #2e4c35;
+            --feedback-error-bg: #f9e3e3; --feedback-error-border: #d48f8f; --feedback-error-text: #5c2b2b;
+        }[data-theme="contrast"] {
+            --bg-body: #000000; --bg-card: #000000; --bg-header: #000000;
+            --text-main: #ffffff; --text-muted: #dddddd; --text-accent: #ffff00;
+            --border-color: #ffffff; --highlight-bg: #333333;
+            --button-bg: #ffff00; --button-text: #000000; --button-hover: #e6e600;
+            --feedback-success-bg: #000000; --feedback-success-border: #00ff00; --feedback-success-text: #00ff00;
+            --feedback-error-bg: #000000; --feedback-error-border: #ff0000; --feedback-error-text: #ff0000;
+        }
+
+        /* --- Global Reset & Layout --- */
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-main);
+            margin: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            line-height: 1.6;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        header.unpinned { position: relative; box-shadow: none; }
+
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; flex-wrap: wrap; gap: 15px;
+        }
+
+        header h1 { font-size: 1.5rem; margin: 0; color: var(--text-accent); font-weight: 700; }
+
+        .controls-wrapper { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+        /* --- Custom Theme Builder --- */
+        .custom-builder {
+            display: none; flex-wrap: wrap; gap: 15px;
+            background-color: var(--bg-card); padding: 10px 15px;
+            border-radius: 8px; border: 1px solid var(--border-color);
+            margin-top: 5px; font-size: 0.85rem; animation: fadeIn 0.3s;
+            width: 100%; justify-content: flex-end;
+        }
+        .custom-builder.active { display: flex; }
+        .color-picker-group { display: flex; align-items: center; gap: 8px; }
+        .color-picker-group input[type="color"] {
+            border: none; width: 25px; height: 25px; border-radius: 4px;
+            cursor: pointer; padding: 0; background: none;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Controls --- */
+        .header-btn {
+            background-color: var(--highlight-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-btn:hover {
+            border-color: var(--text-accent);
+            color: var(--text-accent);
+        }
+
+        .pin-btn {
+            background: none; border: 1px solid var(--border-color); color: var(--text-main);
+            cursor: pointer; padding: 0 10px; border-radius: 6px; font-size: 1rem;
+            transition: background-color 0.2s; height: 34px; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .pin-btn:hover { background-color: var(--highlight-bg); }
+        .pin-btn.pin-active { background-color: rgba(0, 0, 0, 0.1); }
+
+        select#theme-select {
+            padding: 0 12px; border-radius: 6px; border: 1px solid var(--border-color);
+            background-color: var(--bg-card); color: var(--text-main);
+            cursor: pointer; font-family: inherit; height: 34px;
+        }
+
+        /* --- Section Navigation --- */
+        .section-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+        .section-nav button {
+            background-color: var(--highlight-bg); color: var(--text-main);
+            border: 1px solid var(--border-color); padding: 6px 12px;
+            border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .section-nav button:hover { border-color: var(--text-accent); color: var(--text-accent); }
+
+        /* --- Main Content --- */
+        .container {
+            max-width: 850px;
+            margin: 2rem auto;
+            padding: 0 1rem 4rem 1rem;
+        }
+
+        .section-header {
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--text-accent);
+            color: var(--text-accent);
+            font-size: 1.5rem;
+            font-weight: 700;
+            scroll-margin-top: 150px; /* Offset for sticky header */
+        }
+
+        /* --- Question Card --- */
+        .question-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .lo-box {
+            background-color: var(--highlight-bg);
+            border-left: 4px solid var(--text-accent);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: italic;
+            display: none; /* Hidden by default */
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Options --- */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            background-color: var(--highlight-bg);
+            border-color: var(--text-muted);
+        }
+
+        .option-label input {
+            margin-top: 0.3rem;
+            margin-right: 1rem;
+            accent-color: var(--text-accent);
+            transform: scale(1.2);
+        }
+
+        /* --- Buttons --- */
+        .btn-check {
+            margin-top: 1.5rem;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-check:hover {
+            opacity: 0.9;
+        }
+
+        .btn-link {
+            display: inline-block;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-link:hover {
+            opacity: 0.9;
+        }
+
+        /* --- Feedback Area --- */
+        .feedback {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+            border: 1px solid transparent;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback.correct {
+            background-color: var(--feedback-success-bg);
+            border-color: var(--feedback-success-border);
+            color: var(--feedback-success-text);
+        }
+
+        .feedback.incorrect {
+            background-color: var(--feedback-error-bg);
+            border-color: var(--feedback-error-border);
+            color: var(--feedback-error-text);
+        }
+
+        .feedback-header {
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .rationale {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .source {
+            display: block;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            opacity: 0.8;
+            font-style: italic;
+            border-top: 1px dashed currentColor;
+            padding-top: 0.5rem;
+        }
+
+        /* --- Mobile Tweaks --- */
+        @media (max-width: 768px) {
+            .header-top { flex-direction: column; align-items: flex-start; }
+            .controls-wrapper { width: 100%; justify-content: flex-start; }
+            .section-nav { justify-content: flex-start; }
+            .custom-builder { justify-content: flex-start; }
+            header h1 { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="main-header">
+        <div class="header-top">
+            <h1>Week 40 Practice Quiz 1</h1>
+            <div class="controls-wrapper">
+                
+                <!-- Reveal LOs Button in Header -->
+                <button id="reveal-all-btn" class="header-btn" onclick="toggleAllLOs()">Show Learning Objectives</button>
+                
+                <!-- Pin Button -->
+                <button class="pin-btn pin-active" id="pin-btn" onclick="toggleHeader()" title="Pin/Unpin Header">📌</button>
+                
+                <!-- Theme Selector -->
+                <div class="theme-control">
+                    <select id="theme-select" onchange="changeTheme(this.value)">
+                        <option value="dark">Modern Dark</option>
+                        <option value="midnight">Midnight</option>
+                        <option value="light">Modern Light</option>
+                        <option value="legacy-dark">Legacy Dark</option>
+                        <option value="sepia">Sepia</option>
+                        <option value="contrast">High Contrast</option>
+                        <option value="custom">⚙️ Custom...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Custom Theme Color Pickers -->
+            <div class="custom-builder" id="custom-builder">
+                <div class="color-picker-group">
+                    <label>Background:</label>
+                    <input type="color" id="color-bg" value="#1a1a2e" oninput="updateCustomTheme()">
+                </div>
+                <div class="color-picker-group">
+                    <label>Cards:</label>
+                    <input type="color" id="color-card" value="#16213e" oninput="updateCustomTheme()">
+                </div>
+                <div class="color-picker-group">
+                    <label>Text:</label>
+                    <input type="color" id="color-text" value="#e94560" oninput="updateCustomTheme()">
+                </div>
+                <div class="color-picker-group">
+                    <label>Accent:</label>
+                    <input type="color" id="color-accent" value="#0f3460" oninput="updateCustomTheme()">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dynamic Navigation Bar -->
+        <div class="section-nav" id="section-nav"></div>
+    </header>
+
+    <div class="container">
+        <div id="quiz-root">
+            <!-- Content injected via JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- Data ---
+        const quizData =[
+            // --- Section 1: Posterior Abdominal Wall, Kidneys, and Bladder ---
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO1: Describe and identify the action and neurovascular supply of the muscles of the posterior abdominal wall (quadratus lumborum, psoas major, psoas minor and iliacus) and diaphragm. Discuss the diaphragm’s general structure and openings.",
+                question: "A 45-year-old man presents with severe lower back pain and difficulty flexing his right hip. Imaging reveals a retroperitoneal abscess localized within a large muscle that originates on the T12-L5 vertebrae and inserts onto the lesser trochanter of the femur. To reach its distal attachment, this muscle normally passes under which of the following ligamentous structures?",
+                options: {
+                    A: "Inguinal ligament",
+                    B: "Lateral arcuate ligament",
+                    C: "Medial arcuate ligament",
+                    D: "Median arcuate ligament",
+                    E: "Pectineal ligament"
+                },
+                correctAnswer: "C",
+                rationale: "The muscle described is the psoas major, which originates on the T12-L5 vertebrae, inserts on the lesser trochanter, and acts to flex the hip. As it travels inferiorly, it passes under the medial arcuate ligament of the diaphragm.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 6: 'Psoas Major • Proximal attachment: T12-L5 vertebrae • Passes under the medial arcuate ligament'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO1: Describe and identify the action and neurovascular supply of the muscles of the posterior abdominal wall (quadratus lumborum, psoas major, psoas minor and iliacus) and diaphragm. Discuss the diaphragm’s general structure and openings.",
+                question: "A 55-year-old man is diagnosed with a severe hiatal hernia. The surgeon explains that a portion of the patient's stomach is herniating upward through a natural opening in the diaphragm located at the T10 vertebral level. Along with the esophagus, which of the following structures normally passes through this specific aperture?",
+                options: {
+                    A: "Anterior and posterior vagal trunks",
+                    B: "Aorta",
+                    C: "Inferior vena cava",
+                    D: "Right phrenic nerve",
+                    E: "Thoracic duct"
+                },
+                correctAnswer: "A",
+                rationale: "The esophageal hiatus is located at the T10 vertebral level. The structures that normally pass through the esophageal hiatus include the esophagus, the anterior and posterior vagal trunks, and the esophageal branches of the left gastric artery.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 16: 'Esophageal Hiatus | Esophagus, anterior/posterior vagal trunks, esophageal branches of left gastric a. | T10'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO2: Describe and identify the lumbar plexus and its branches. Describe the functional significance of lesions to these nerves.",
+                question: "A 35-year-old man undergoes an appendectomy. Postoperatively, he complains of a loss of sensation over the anterior surface of his right scrotum. Physical examination reveals an absent cremasteric reflex on the right side. Which of the following nerves of the lumbar plexus was most likely injured during the surgical procedure?",
+                options: {
+                    A: "Femoral nerve",
+                    B: "Genitofemoral nerve",
+                    C: "Iliohypogastric nerve",
+                    D: "Lateral cutaneous nerve of the thigh",
+                    E: "Obturator nerve"
+                },
+                correctAnswer: "B",
+                rationale: "The genitofemoral nerve (L1, L2) divides into genital and femoral branches. The genital branch supplies the cremaster muscle and provides sensory innervation to the scrotum (or labium majus).",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 73: 'Genitofemoral Nerve ... Target: Genital branch: cremaster muscle and sensory to scrotum or labium majus'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO2: Describe and identify the lumbar plexus and its branches. Describe the functional significance of lesions to these nerves.",
+                question: "A 40-year-old pregnant woman complains of a burning and tingling sensation strictly over the anterior and lateral aspects of her left thigh. Neurological examination reveals hypersensitivity in this region. The nerve responsible for these symptoms arises from the anterior rami of L2 and L3 and travels over the iliacus muscle. It enters the thigh by passing under which of the following structures?",
+                options: {
+                    A: "Inguinal ligament",
+                    B: "Lateral arcuate ligament",
+                    C: "Medial arcuate ligament",
+                    D: "Median arcuate ligament",
+                    E: "Pectineal line"
+                },
+                correctAnswer: "A",
+                rationale: "The lateral cutaneous nerve of the thigh (L2, L3) passes over the iliacus muscle and travels under the inguinal ligament to supply the skin of the anterior thigh. Compression under the inguinal ligament can lead to the sensory symptoms described.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 71: 'Lateral Cutaneous Nerve of the Thigh ... Path: over iliacus -> under inguinal ligament -> thigh'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO3: Identify and describe the features of the right and left kidneys, bladder, and suprarenal glands including structure, location, relationships to surrounding structures, innervation, and vasculature.",
+                question: "A 28-year-old man sustains a deep stab wound to the left flank. Imaging reveals penetrating trauma to the anterior surface of the left kidney. Which of the following structures is most likely to be directly injured by a penetrating injury to the anterior surface of the left kidney?",
+                options: {
+                    A: "Ascending colon",
+                    B: "Duodenum",
+                    C: "Liver",
+                    D: "Pancreas",
+                    E: "Right crus of the diaphragm"
+                },
+                correctAnswer: "D",
+                rationale: "The anterior relationships of the left kidney include the stomach, spleen, pancreas, jejunum, and descending colon. The liver, duodenum, and ascending colon are situated anterior to the right kidney.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 38: 'Anterior to left kidney: • Stomach, spleen, pancreas, jejunum, and descending colon'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO3: Identify and describe the features of the right and left kidneys, bladder, and suprarenal glands including structure, location, relationships to surrounding structures, innervation, and vasculature.",
+                question: "A 45-year-old woman presents with episodic palpitations, excessive sweating, and severe headaches. Imaging reveals a mass within the central portion (medulla) of her left suprarenal gland. The cells comprising this tumor are normally stimulated to secrete epinephrine by which of the following neural mechanisms?",
+                options: {
+                    A: "Postganglionic parasympathetic fibers from the posterior vagal trunk",
+                    B: "Postganglionic sympathetic fibers from the celiac ganglion",
+                    C: "Postganglionic sympathetic fibers from the renal plexus",
+                    D: "Preganglionic parasympathetic fibers from the pelvic splanchnic nerves",
+                    E: "Preganglionic sympathetic fibers synapsing directly onto the medulla"
+                },
+                correctAnswer: "E",
+                rationale: "The suprarenal medulla is unique in its sympathetic innervation. Preganglionic sympathetic fibers from the abdominopelvic splanchnic nerves bypass the prevertebral ganglia and synapse directly onto the chromaffin cells of the suprarenal medulla, which then release epinephrine.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 62: 'Sympathetic Innervation of the Suprarenal Gland • Preganglionic fiber synapse directly onto the medulla • Chromaffin cells release epinephrine'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO4: Trace the flow of urine from the gross collecting structures in the kidney to the urinary bladder. Describe the location, course, vasculature, innervation, and normal constrictions of the ureters. Identify sites where kidney stones may be found and discuss referred pain from them.",
+                question: "A 42-year-old man presents to the emergency department with severe, intermittent pain radiating from his lower back to his groin and scrotum. A CT scan of the abdomen and pelvis reveals a radiopaque stone lodged in the ureter at the point where it crosses the pelvic brim. The patient's referred pain is mediated by visceral afferent nerve fibers that travel back to which of the following spinal cord levels?",
+                options: {
+                    A: "T5 - T9",
+                    B: "T8 - T10",
+                    C: "T11 - L2",
+                    D: "L3 - L5",
+                    E: "S2 - S4"
+                },
+                correctAnswer: "C",
+                rationale: "Referred pain from the kidneys and ureters, commonly experienced during the passage of kidney stones (renal calculi), is mediated by visceral afferents that map to the T11 - L2 spinal cord segments. This explains the characteristic pain radiation from the lumbar region to the inguinal region and scrotum/labia.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 55: 'Referred Pain from the Kidneys • Visceral afferents: T11- L2'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO4: Trace the flow of urine from the gross collecting structures in the kidney to the urinary bladder. Describe the location, course, vasculature, innervation, and normal constrictions of the ureters. Identify sites where kidney stones may be found and discuss referred pain from them.",
+                question: "A 50-year-old woman undergoes a partial nephrectomy for a localized renal tumor. During the procedure, the surgeon carefully dissects the gross collecting structures of the kidney. She identifies a large, funnel-shaped structure at the superior end of the ureter that directly receives urine from the major calices. Which of the following is the correct anatomical term for this structure?",
+                options: {
+                    A: "Renal column",
+                    B: "Renal cortex",
+                    C: "Renal papilla",
+                    D: "Renal pelvis",
+                    E: "Renal pyramid"
+                },
+                correctAnswer: "D",
+                rationale: "Urine flows from the minor calices to the major calices, and then into the renal pelvis. The renal pelvis is described as the funnel-shaped structure at the superior end of the ureter.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 48: 'Internal Structures of the Kidney ... • Major calices ▪ accept 2-3 minor calices • Renal pelvis ▪ funnel-shape at superior end of the ureter'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO5: Describe and locate the major branches of the abdominal aorta and tributaries of the inferior vena cave (IVC), the structures they supply and drain, and their relationships to surrounding structures.",
+                question: "A 65-year-old man with severe atherosclerosis undergoes abdominal angiography to map the blood supply to his abdominal viscera. The radiologist identifies several vessels belonging to the \"paired visceral\" branches of the abdominal aorta. Which of the following arteries belongs to this specific anatomical classification?",
+                options: {
+                    A: "Celiac artery",
+                    B: "Inferior mesenteric artery",
+                    C: "Inferior phrenic artery",
+                    D: "Lumbar artery",
+                    E: "Renal artery"
+                },
+                correctAnswer: "E",
+                rationale: "The branches of the abdominal aorta are classified into groups. The paired visceral branches include the middle suprarenal arteries, renal arteries, and gonadal arteries. The celiac and inferior mesenteric arteries are unpaired visceral branches, while the inferior phrenic and lumbar arteries are paired parietal branches.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 22: 'Abdominal Aorta | Abdominal Branches ... Paired visceral | Middle suprarenal aa. | Renal aa. | Gonadal aa.'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO5: Describe and locate the major branches of the abdominal aorta and tributaries of the inferior vena cave (IVC), the structures they supply and drain, and their relationships to surrounding structures.",
+                question: "A 30-year-old man presents to the clinic with a dragging sensation and a \"bag of worms\" appearance in his left scrotum, which is diagnosed as a varicocele. This condition is often caused by impaired venous drainage or elevated pressure within the draining vein. The affected vein normally empties directly into which of the following vessels?",
+                options: {
+                    A: "Inferior vena cava",
+                    B: "Left common iliac vein",
+                    C: "Left renal vein",
+                    D: "Left suprarenal vein",
+                    E: "Superior mesenteric vein"
+                },
+                correctAnswer: "C",
+                rationale: "The venous drainage of the gonads is asymmetrical. The right gonadal vein drains directly into the inferior vena cava (IVC), whereas the left gonadal vein drains directly into the left renal vein before reaching the IVC.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 27: 'Inferior Vena Cava ... Gonadal vv. | Left -> L renal v. -> IVC'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO6: Discuss the anatomical basis, clinical presentation (including presentation via diagnostic imaging), &/or clinical significance of the following: renal vein entrapment syndrome, renal transplantation and abdominal aortic aneurysm.",
+                question: "A 22-year-old woman presents with microscopic hematuria, left flank pain, and nausea. Diagnostic imaging demonstrates compression of the left renal vein as it crosses the abdominal aorta. Which of the following anterior structures is most likely responsible for compressing the vein in this patient?",
+                options: {
+                    A: "Celiac artery",
+                    B: "Inferior mesenteric artery",
+                    C: "Left gonadal artery",
+                    D: "Right renal artery",
+                    E: "Superior mesenteric artery"
+                },
+                correctAnswer: "E",
+                rationale: "Renal vein entrapment syndrome, also known as \"Nutcracker syndrome,\" occurs when the left renal vein is compressed between the superior mesenteric artery (SMA) anteriorly and the abdominal aorta posteriorly.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 43: 'Renal Vein Entrapment • AKA “Nutcracker syndrome” • Compression of left renal vein by the SMA'"
+            },
+            {
+                section: "Posterior Abdominal Wall, Kidneys, and Bladder",
+                fullLO: "LO6: Discuss the anatomical basis, clinical presentation (including presentation via diagnostic imaging), &/or clinical significance of the following: renal vein entrapment syndrome, renal transplantation and abdominal aortic aneurysm.",
+                question: "A 45-year-old man with end-stage renal disease is undergoing a kidney transplant. The surgical team places the donor kidney in the recipient's right iliac fossa. To establish the necessary blood supply, the surgeon must anastomose the donor renal artery to a major vessel in this immediate region. Which of the following vessels is the standard target for this anastomosis?",
+                options: {
+                    A: "Abdominal aorta",
+                    B: "Common iliac artery",
+                    C: "External iliac artery",
+                    D: "Inferior mesenteric artery",
+                    E: "Internal iliac artery"
+                },
+                correctAnswer: "C",
+                rationale: "During a renal transplant, the new kidney is typically placed into the iliac fossa, and the donor renal artery and vein are joined to the recipient's external iliac artery and vein, respectively.",
+                source: "Posterior Abdominal Wall, Kidneys, and Bladder PDF, slide 47: 'Renal Transplant • New kidney transplanted into iliac fossa • Renal a./v. - joined to external iliac a./v.'"
+            },
+
+            // --- Section 2: Renal Clearance ---
+            {
+                section: "Renal Clearance",
+                fullLO: "LO1: Define renal clearance and understand the use of inulin and creatinine in determining GFR and filtered load.",
+                question: "A clinical researcher is evaluating the excretory function of the kidneys in a cohort of healthy volunteers. She measures the rate at which various substances are removed from the blood and excreted into the urine. Which of the following best defines the specific concept of \"clearance\" as used in her renal physiology study?",
+                options: {
+                    A: "The total mass of a substance excreted in the urine per day",
+                    B: "The total volume of urine produced over a 24-hour period",
+                    C: "The total volume of plasma completely cleared of a substance by the kidney over a period of time",
+                    D: "The total mass of a substance filtered across the glomerulus per minute",
+                    E: "The concentration of a waste product in the urine divided by its concentration in the plasma"
+                },
+                correctAnswer: "C",
+                rationale: "Clearance is a specific term in renal physiology that describes kidney function as the volume of plasma completely cleared of a substance by the kidney over a period of time (units are ml/min). It is an expression of volume over time, not mass over time (excretion).",
+                source: "Renal Clearance PDF, slide 31: 'Clearance describes kidney function as the ‘volume of plasma completely cleared of a substance by the kidney over a period of time’'"
+            },
+            {
+                section: "Renal Clearance",
+                fullLO: "LO1: Define renal clearance and understand the use of inulin and creatinine in determining GFR and filtered load.",
+                question: "A 55-year-old man with hypertension is being evaluated for chronic kidney disease. His physician decides to use creatinine clearance as an estimate of his glomerular filtration rate (eGFR). Which of the following characteristics makes creatinine uniquely suitable for estimating GFR in a routine clinical setting compared to exogenous markers like inulin?",
+                options: {
+                    A: "It is freely filtered and completely reabsorbed by the proximal tubule.",
+                    B: "It is completely secreted by the renal tubules without any filtration.",
+                    C: "It is produced roughly at stable rates by the body and does not have to be administered.",
+                    D: "It represents the exact mass of filtered waste without any tubular secretion.",
+                    E: "It relies solely on the patient's dietary protein intake for its continuous production."
+                },
+                correctAnswer: "C",
+                rationale: "While inulin is a perfect marker for GFR (freely filtered, completely ignored by tubules), it must be continuously infused via an IV to achieve steady plasma levels. Creatinine is uniquely useful clinically because it is produced roughly at stable rates by the body's muscle metabolism, meaning it does not have to be administered.",
+                source: "Renal Clearance PDF, slide 48: 'Creatinine is unique in that it does not have to be administered. It is produced roughly at stable rates by the body, so Cr clearance can be calculated without infusing it.'"
+            },
+            {
+                section: "Renal Clearance",
+                fullLO: "LO2: Given the plasma and urine concentrations and the urine flow rate, be able to calculate excretion rate, and clearance.",
+                question: "A 40-year-old woman undergoes a 24-hour urine collection to assess her renal function. The total volume of urine produced over 24 hours is 2 L. Laboratory analysis reveals a urine concentration of a specific waste product of 120 mg/L, and a steady plasma concentration of 10 mg/L. Which of the following is the approximate calculated clearance of this waste product?",
+                options: {
+                    A: "12 L/day",
+                    B: "24 L/day",
+                    C: "60 L/day",
+                    D: "120 L/day",
+                    E: "240 L/day"
+                },
+                correctAnswer: "B",
+                rationale: "Clearance (Cx) is calculated using the formula: Cx = (Ux * V) / Px.\nUx = 120 mg/L\nV = 2 L/day\nPx = 10 mg/L\nTotal mass in urine (excretion) = 120 mg/L * 2 L/day = 240 mg/day.\nClearance = 240 mg/day / 10 mg/L = 24 L/day.",
+                source: "Renal Clearance PDF, slide 44-45: 'Question: • Urine was collected for 24 hours. 2L of urine was produced. The urine concentration of x is 10mg/L • Plasma concentration of x is 20mg/L ... = 2 x 10mg = 20mg (total in urine) ... 20mg (per L of blood) = 1L (of blood was ‘cleared’ of x) in 24 hours' (Calculation applied to vignette values)."
+            },
+            {
+                section: "Renal Clearance",
+                fullLO: "LO2: Given the plasma and urine concentrations and the urine flow rate, be able to calculate excretion rate, and clearance.",
+                question: "A patient in the intensive care unit has a urinary catheter in place to precisely monitor renal output. The patient produces 2 L of urine over a 24-hour period. Laboratory analysis shows that the urine concentration of substance Y is 30 mg/L. What is the patient's total urinary excretion of substance Y over this 24-hour period?",
+                options: {
+                    A: "15 mg",
+                    B: "30 mg",
+                    C: "60 mg",
+                    D: "120 mg",
+                    E: "240 mg"
+                },
+                correctAnswer: "C",
+                rationale: "Urinary excretion is equal to the concentration of the substance in the urine multiplied by the urine volume (Excretion = Ux * V).\nUx = 30 mg/L\nV = 2 L\nExcretion = 30 mg/L * 2 L = 60 mg.",
+                source: "Renal Clearance PDF, slide 44-45: 'Question: • Urine was collected for 24 hours. 2L of urine was produced. The urine concentration of x is 10mg/L ... = 2 x 10mg = 20mg (total in urine)'"
+            },
+            {
+                section: "Renal Clearance",
+                fullLO: "LO3: State the criteria that must be met for a substance in order for its clearance to be used as a measure of GFR.",
+                question: "A pharmacologist is developing a new synthetic marker to precisely measure the glomerular filtration rate (GFR) in patients with chronic kidney disease. For the calculated clearance of this new marker to exactly equal the GFR, it is imperative that the substance is freely filtered at the glomerulus and possesses an absolute absence of which of the following properties?",
+                options: {
+                    A: "Plasma stability",
+                    B: "Renal tubular secretion",
+                    C: "Systemic circulation",
+                    D: "Urinary excretion",
+                    E: "Water solubility"
+                },
+                correctAnswer: "B",
+                rationale: "For a substance to perfectly match GFR, it must be freely filtered and must not be secreted, reabsorbed, synthesized, or metabolized by the renal tubules. If it is secreted (like creatinine is slightly), its clearance will overestimate GFR.",
+                source: "Renal Clearance PDF, slide 48: 'For a substance to be used as a marker for GFR, these assumptions must be fulfilled: 1. freely filtered ... 2. not secreted by the tubules 3. not reabsorbed by the tubules'"
+            },
+            {
+                section: "Renal Clearance",
+                fullLO: "LO3: State the criteria that must be met for a substance in order for its clearance to be used as a measure of GFR.",
+                question: "A 60-year-old woman has her renal function evaluated using a standard creatinine clearance test. The physician notes that the calculated creatinine clearance value is slightly higher than her actual glomerular filtration rate (GFR) as determined by an inulin infusion test. Which of the following physiological processes best explains why creatinine slightly overestimates GFR?",
+                options: {
+                    A: "Incomplete filtration at the glomerulus",
+                    B: "Reabsorption of creatinine by the proximal tubule",
+                    C: "Secretion of creatinine by the renal tubules",
+                    D: "Synthesis of creatinine by the loop of Henle",
+                    E: "Variable daily variations in urine flow rate"
+                },
+                correctAnswer: "C",
+                rationale: "Creatinine is an excellent clinical estimate for GFR, but it is not a perfect 1:1 match because a small amount of creatinine is secreted by the renal tubules. Because it is both filtered and slightly secreted, the total amount excreted is slightly higher than what was filtered, leading to a slight overestimation of GFR.",
+                source: "Renal Clearance PDF, slide 50: 'If precise GFR is needed, another marker is used because the secretion of Cr by the tubules will overestimate GFR slightly.'"
+            },
+            {
+                section: "Renal Clearance",
+                fullLO: "LO4: Define fractional excretion of a given substance and predict whether a substance undergoes net reabsorption or net secretion by comparison of its rate of filtration to its rate of excretion.",
+                question: "A patient undergoing advanced renal function testing is found to have a fractional excretion of substance X (FEx) of 1.5. Based on this physiological value, which of the following conclusions can be definitively made regarding the renal tubular handling of substance X?",
+                options: {
+                    A: "It is completely impermeable to the glomerular filtration barrier.",
+                    B: "It undergoes 100% reabsorption in the proximal tubule.",
+                    C: "It undergoes net reabsorption by the renal tubules.",
+                    D: "It undergoes net secretion by the renal tubules.",
+                    E: "It is metabolized entirely within the tubule lumen."
+                },
+                correctAnswer: "D",
+                rationale: "Fractional excretion defines the fraction of the filtered mass of a substance that is excreted in the urine. An FEx greater than 1 (e.g., 1.5) means that 50% more of the substance was excreted than was originally filtered, indicating that the substance must undergo net secretion by the renal tubules.",
+                source: "Renal Clearance PDF, slide 61: 'FEx = 1.5: 50% MORE of substance X was excreted than was filtered, i.e. NET secretion. (FEx is greater than 1)'"
+            },
+            {
+                section: "Renal Clearance",
+                fullLO: "LO4: Define fractional excretion of a given substance and predict whether a substance undergoes net reabsorption or net secretion by comparison of its rate of filtration to its rate of excretion.",
+                question: "A 70-year-old man develops acute renal failure following a severe hypotensive episode during surgery. His urine output drops dramatically. Laboratory testing reveals a fractional excretion of sodium (FENa) of greater than 2%, a BUN-to-creatinine ratio of 12, and a urine osmolality of 300 mOsm/kg. These findings strongly differentiate his condition from a purely pre-renal etiology and are most consistent with which of the following diagnoses?",
+                options: {
+                    A: "Acute tubular necrosis",
+                    B: "Benign prostatic hyperplasia",
+                    C: "Bilateral renal artery stenosis",
+                    D: "Pre-renal failure",
+                    E: "Severe dehydration"
+                },
+                correctAnswer: "A",
+                rationale: "The findings of a fractional Na+ excretion >2%, a BUN/Cr ratio between 10-15, and low urine osmolality (<350) indicate intrinsic renal failure due to tubular damage, specifically Acute Tubular Necrosis (ATN). In contrast, pre-renal failure presents with an FENa <1% because the intact tubules actively reabsorb sodium to restore volume.",
+                source: "Renal Clearance PDF, slide 67: 'Types of acute renal failure ... Acute tubular necrosis | Fractional Na+ excretion >2% | BUN/Cr 10-15 | Urinary sodium >40 | Urine osmolality <350'"
+            }
+        ];
+
+        // --- Core Logic ---
+        const quizRoot = document.getElementById('quiz-root');
+        const themeSelect = document.getElementById('theme-select');
+        const pinBtn = document.getElementById('pin-btn');
+        const mainHeader = document.getElementById('main-header');
+        const sectionNav = document.getElementById('section-nav');
+        const customBuilder = document.getElementById('custom-builder');
+        const rootElements = document.documentElement;
+
+        let isRevealed = false;
+
+        function toggleAllLOs() {
+            isRevealed = !isRevealed;
+            const btn = document.getElementById('reveal-all-btn');
+            btn.textContent = isRevealed ? "Hide Learning Objectives" : "Show Learning Objectives";
+            
+            document.querySelectorAll('.lo-box').forEach(box => {
+                box.style.display = isRevealed ? 'block' : 'none';
+            });
+        }
+
+        function initQuiz() {
+            let currentSection = "";
+            let sectionIndex = 0;
+            
+            quizData.forEach((item, index) => {
+                if (item.section !== currentSection) {
+                    currentSection = item.section;
+                    
+                    const sectionId = 'sec-' + sectionIndex;
+                    
+                    const sectionHeader = document.createElement('h2');
+                    sectionHeader.className = 'section-header';
+                    sectionHeader.id = sectionId;
+                    sectionHeader.textContent = currentSection;
+                    quizRoot.appendChild(sectionHeader);
+
+                    const navBtn = document.createElement('button');
+                    let btnText = currentSection;
+                    if (btnText.includes("Posterior Abdominal Wall")) btnText = "Posterior Abdominal Wall";
+                    if (btnText.includes("Renal Clearance")) btnText = "Renal Clearance";
+                    
+                    navBtn.textContent = btnText;
+                    navBtn.onclick = () => {
+                        document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+                    };
+                    sectionNav.appendChild(navBtn);
+
+                    sectionIndex++;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `q-card-${index}`;
+
+                const loBox = document.createElement('div');
+                loBox.className = 'lo-box';
+                loBox.id = `lo-${index}`;
+                loBox.innerHTML = item.fullLO;
+                card.appendChild(loBox);
+
+                const qText = document.createElement('div');
+                qText.className = 'question-text';
+                qText.innerHTML = `${index + 1}. ${item.question}`;
+                card.appendChild(qText);
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = 'options-grid';
+
+                for (const[key, value] of Object.entries(item.options)) {
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `question-${index}`;
+                    input.value = key;
+
+                    const span = document.createElement('span');
+                    span.innerHTML = `${key}. ${value}`;
+
+                    label.appendChild(input);
+                    label.appendChild(span);
+                    optionsGrid.appendChild(label);
+                }
+                card.appendChild(optionsGrid);
+
+                const btn = document.createElement('button');
+                btn.className = 'btn-check';
+                btn.textContent = 'Check Answer';
+                btn.onclick = () => checkAnswer(index);
+                card.appendChild(btn);
+
+                const feedback = document.createElement('div');
+                feedback.className = 'feedback';
+                feedback.id = `feedback-${index}`;
+                card.appendChild(feedback);
+
+                quizRoot.appendChild(card);
+            });
+
+            const returnContainer = document.createElement('div');
+            returnContainer.style.textAlign = 'center';
+            returnContainer.style.marginTop = '2rem';
+            
+            const returnBtn = document.createElement('a');
+            returnBtn.href = 'https://ibecerramcg.github.io/GI-GU-ENDO-Practice-Quizzes/';
+            returnBtn.className = 'btn-link';
+            returnBtn.textContent = '← Return to Quiz Directory';
+            
+            returnContainer.appendChild(returnBtn);
+            quizRoot.appendChild(returnContainer);
+
+            const savedTheme = localStorage.getItem('quizTheme') || 'dark';
+            themeSelect.value = savedTheme;
+            changeTheme(savedTheme);
+
+            const savedPinState = localStorage.getItem('headerPinned');
+            toggleHeader(savedPinState !== 'false');
+        }
+
+        function checkAnswer(index) {
+            const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+            const feedbackEl = document.getElementById(`feedback-${index}`);
+            const data = quizData[index];
+
+            if (!selected) {
+                alert("Please select an answer.");
+                return;
+            }
+
+            const isCorrect = selected.value === data.correctAnswer;
+            
+            let html = `<span class="feedback-header">${isCorrect ? "Correct!" : "Incorrect"}</span>`;
+            if (!isCorrect) {
+                html += `<div>The correct answer is <strong>${data.correctAnswer}</strong>.</div>`;
+            }
+            
+            html += `<div class="rationale"><strong>Rationale:</strong> ${data.rationale}</div>`;
+            html += `<div class="source"><strong>Source:</strong> ${data.source}</div>`;
+
+            feedbackEl.innerHTML = html;
+            feedbackEl.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+        }
+
+        function changeTheme(themeName) {
+            localStorage.setItem('quizTheme', themeName);
+            
+            if (themeName === 'custom') {
+                rootElements.removeAttribute('data-theme');
+                customBuilder.classList.add('active');
+                loadCustomTheme();
+            } else {
+                rootElements.setAttribute('data-theme', themeName);
+                customBuilder.classList.remove('active');
+                rootElements.removeAttribute('style');
+            }
+        }
+
+        function updateCustomTheme() {
+            const bg = document.getElementById('color-bg').value;
+            const card = document.getElementById('color-card').value;
+            const text = document.getElementById('color-text').value;
+            const accent = document.getElementById('color-accent').value;
+
+            rootElements.style.setProperty('--bg-body', bg);
+            rootElements.style.setProperty('--bg-header', bg);
+            rootElements.style.setProperty('--bg-card', card);
+            rootElements.style.setProperty('--highlight-bg', card);
+            rootElements.style.setProperty('--text-main', text);
+            rootElements.style.setProperty('--text-accent', accent);
+            rootElements.style.setProperty('--button-bg', accent);
+            rootElements.style.setProperty('--button-text', bg);
+            rootElements.style.setProperty('--border-color', accent + '40');
+
+            const customColors = { bg, card, text, accent };
+            localStorage.setItem('customThemeColors', JSON.stringify(customColors));
+        }
+
+        function loadCustomTheme() {
+            const savedColors = JSON.parse(localStorage.getItem('customThemeColors'));
+            if (savedColors) {
+                document.getElementById('color-bg').value = savedColors.bg;
+                document.getElementById('color-card').value = savedColors.card;
+                document.getElementById('color-text').value = savedColors.text;
+                document.getElementById('color-accent').value = savedColors.accent;
+                updateCustomTheme();
+            } else {
+                updateCustomTheme();
+            }
+        }
+
+        function toggleHeader(forceState) {
+            const isCurrentlyPinned = !mainHeader.classList.contains('unpinned');
+            const newState = (typeof forceState === 'boolean') ? forceState : !isCurrentlyPinned;
+
+            if (newState) {
+                mainHeader.classList.remove('unpinned');
+                pinBtn.classList.add('pin-active');
+                localStorage.setItem('headerPinned', 'true');
+            } else {
+                mainHeader.classList.add('unpinned');
+                pinBtn.classList.remove('pin-active');
+                localStorage.setItem('headerPinned', 'false');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initQuiz);
+
+    </script>
+</body>
+</html>
